@@ -1,12 +1,15 @@
-import { prismaClient } from "../../extras/prisma.js";
-import { GetMeError } from "../users/user-types.js";
-import { CreatePostError, GetPostError, GetMePostError, DeletePostError, } from "./post-types.js";
-export const createPost = async (parameters) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.searchPosts = exports.getPostsByUser = exports.getAllPosts = exports.getPastPosts = exports.getPostById = exports.deletePost = exports.getMePost = exports.createPost = void 0;
+const prisma_js_1 = require("../../extras/prisma.js");
+const user_types_js_1 = require("../users/user-types.js");
+const post_types_js_1 = require("./post-types.js");
+const createPost = async (parameters) => {
     const { userId, input } = parameters;
     if (!input.title || !input.content) {
-        throw CreatePostError.BAD_REQUEST;
+        throw post_types_js_1.CreatePostError.BAD_REQUEST;
     }
-    const post = await prismaClient.post.create({
+    const post = await prisma_js_1.prismaClient.post.create({
         data: {
             title: input.title,
             content: input.content,
@@ -15,8 +18,9 @@ export const createPost = async (parameters) => {
     });
     return { post };
 };
-export const getMePost = async (parameters) => {
-    const posts = await prismaClient.post.findMany({
+exports.createPost = createPost;
+const getMePost = async (parameters) => {
+    const posts = await prisma_js_1.prismaClient.post.findMany({
         where: {
             userId: parameters.userId,
         },
@@ -27,16 +31,17 @@ export const getMePost = async (parameters) => {
         take: parameters.limit,
     });
     if (!posts) {
-        throw GetMePostError.BAD_REQUEST;
+        throw post_types_js_1.GetMePostError.BAD_REQUEST;
     }
-    const totalPosts = await prismaClient.post.count();
+    const totalPosts = await prisma_js_1.prismaClient.post.count();
     return {
         posts,
         total: totalPosts,
     };
 };
-export const deletePost = async (parameters) => {
-    const user = await prismaClient.user.findUnique({
+exports.getMePost = getMePost;
+const deletePost = async (parameters) => {
+    const user = await prisma_js_1.prismaClient.user.findUnique({
         where: {
             id: parameters.userId,
         },
@@ -46,22 +51,22 @@ export const deletePost = async (parameters) => {
     });
     console.log(user);
     if (!user) {
-        throw DeletePostError.UNAUTHORIZED;
+        throw post_types_js_1.DeletePostError.UNAUTHORIZED;
     }
-    const post = await prismaClient.post.findUnique({
+    const post = await prisma_js_1.prismaClient.post.findUnique({
         where: {
             id: parameters.postId,
         },
     });
     console.log(post);
     if (!post) {
-        return DeletePostError.NOT_FOUND;
+        return post_types_js_1.DeletePostError.NOT_FOUND;
     }
     if (post.userId !== user.id) {
         throw new Error("Unauthorized");
     }
     try {
-        await prismaClient.post.delete({
+        await prisma_js_1.prismaClient.post.delete({
             where: { id: parameters.postId },
         });
     }
@@ -70,20 +75,22 @@ export const deletePost = async (parameters) => {
         throw new Error("Failed to delete post");
     }
 };
-export const getPostById = async (postId) => {
-    const post = await prismaClient.post.findUnique({
+exports.deletePost = deletePost;
+const getPostById = async (postId) => {
+    const post = await prisma_js_1.prismaClient.post.findUnique({
         where: {
             id: postId,
         },
     });
     if (!post) {
-        throw GetMeError.BAD_REQUEST;
+        throw user_types_js_1.GetMeError.BAD_REQUEST;
     }
     return post;
 };
-export const getPastPosts = async (before, page = 1, limit = 10) => {
+exports.getPostById = getPostById;
+const getPastPosts = async (before, page = 1, limit = 10) => {
     const beforeDate = new Date(before);
-    const posts = await prismaClient.post.findMany({
+    const posts = await prisma_js_1.prismaClient.post.findMany({
         where: {
             createdAt: {
                 lt: beforeDate,
@@ -95,7 +102,7 @@ export const getPastPosts = async (before, page = 1, limit = 10) => {
         skip: (page - 1) * limit,
         take: limit,
     });
-    const totalPosts = await prismaClient.post.count({
+    const totalPosts = await prisma_js_1.prismaClient.post.count({
         where: {
             createdAt: {
                 lt: beforeDate,
@@ -107,8 +114,9 @@ export const getPastPosts = async (before, page = 1, limit = 10) => {
         total: totalPosts,
     };
 };
-export const getAllPosts = async (userId, page = 1, limit = 10) => {
-    const posts = await prismaClient.post.findMany({
+exports.getPastPosts = getPastPosts;
+const getAllPosts = async (userId, page = 1, limit = 10) => {
+    const posts = await prisma_js_1.prismaClient.post.findMany({
         orderBy: {
             createdAt: "desc",
         },
@@ -137,7 +145,7 @@ export const getAllPosts = async (userId, page = 1, limit = 10) => {
             },
         },
     });
-    const totalPosts = await prismaClient.post.count();
+    const totalPosts = await prisma_js_1.prismaClient.post.count();
     const formattedPosts = posts.map((post) => ({
         id: post.id,
         title: post.title,
@@ -154,14 +162,15 @@ export const getAllPosts = async (userId, page = 1, limit = 10) => {
         total: totalPosts,
     };
 };
-export const getPostsByUser = async (parameters) => {
-    const posts = await prismaClient.post.findMany({
+exports.getAllPosts = getAllPosts;
+const getPostsByUser = async (parameters) => {
+    const posts = await prisma_js_1.prismaClient.post.findMany({
         where: { userId: parameters.userId },
         orderBy: { createdAt: "desc" },
         skip: (parameters.page - 1) * parameters.limit,
         take: parameters.limit,
     });
-    const totalPosts = await prismaClient.post.count({
+    const totalPosts = await prisma_js_1.prismaClient.post.count({
         where: { userId: parameters.userId },
     });
     return {
@@ -169,8 +178,9 @@ export const getPostsByUser = async (parameters) => {
         total: totalPosts,
     };
 };
-export const searchPosts = async ({ keyword, page, limit }) => {
-    const posts = await prismaClient.post.findMany({
+exports.getPostsByUser = getPostsByUser;
+const searchPosts = async ({ keyword, page, limit }) => {
+    const posts = await prisma_js_1.prismaClient.post.findMany({
         where: {
             title: {
                 contains: keyword,
@@ -181,7 +191,7 @@ export const searchPosts = async ({ keyword, page, limit }) => {
         skip: (page - 1) * limit,
         take: limit,
     });
-    const total = await prismaClient.post.count({
+    const total = await prisma_js_1.prismaClient.post.count({
         where: {
             title: {
                 contains: keyword,
@@ -194,3 +204,4 @@ export const searchPosts = async ({ keyword, page, limit }) => {
         total,
     };
 };
+exports.searchPosts = searchPosts;

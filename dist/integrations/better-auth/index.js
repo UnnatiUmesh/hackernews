@@ -1,15 +1,17 @@
-import { betterAuth } from "better-auth";
-import { betterAuthSecret, serverUrl, webClientUrl } from "../../environment.js";
-import { prismaAdapter } from "better-auth/adapters/prisma";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const better_auth_1 = require("better-auth");
+const environment_js_1 = require("../../environment.js");
+const prisma_1 = require("better-auth/adapters/prisma");
 // import { prismaClient } from "../prisma";
-import { username } from "better-auth/plugins";
-import { prismaClient } from "../prisma/index.js";
-const betterAuthServerClient = betterAuth({
-    baseURL: serverUrl,
-    trustedOrigins: [webClientUrl],
-    secret: betterAuthSecret,
-    plugins: [username()],
-    database: prismaAdapter(prismaClient, {
+const plugins_1 = require("better-auth/plugins");
+const index_js_1 = require("../prisma/index.js");
+const betterAuthServerClient = (0, better_auth_1.betterAuth)({
+    baseURL: environment_js_1.serverUrl,
+    trustedOrigins: [environment_js_1.webClientUrl],
+    secret: environment_js_1.betterAuthSecret,
+    plugins: [(0, plugins_1.username)()],
+    database: (0, prisma_1.prismaAdapter)(index_js_1.prismaClient, {
         provider: "postgresql",
     }),
     user: {
@@ -28,4 +30,4 @@ const betterAuthServerClient = betterAuth({
         enabled: true,
     },
 });
-export default betterAuthServerClient;
+exports.default = betterAuthServerClient;

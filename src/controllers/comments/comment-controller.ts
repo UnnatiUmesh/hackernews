@@ -1,4 +1,4 @@
-import { prismaClient } from "../../extras/prisma.js";
+import { prismaClient } from "../../extras/prisma";
 import {
   type CommentPostResult,
   CommentPostError,
@@ -7,7 +7,7 @@ import {
   DeleteCommentError,
   type UpdateCommet,
   UpdateCommetError,
-} from "./comment-types.js";
+} from "./comment-types";
 
 export const commentPost = async (parameters: {
   userId: string;

@@ -1,33 +1,36 @@
-import { Hono } from "hono";
-import { createPost, getAllPosts, getMePost, deletePost, getPostById, getPastPosts, getPostsByUser, searchPosts } from "../controllers/posts/post-controller.js";
-import { CreatePostError, GetPostError, GetMePostError, DeletePostError, } from "../controllers/posts/post-types.js";
-import { sessionMiddleware } from "./middlewares/session-middleware.js";
-export const postRoutes = new Hono();
-postRoutes.post("/create-post", sessionMiddleware, async (context) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.postRoutes = void 0;
+const hono_1 = require("hono");
+const post_controller_js_1 = require("../controllers/posts/post-controller.js");
+const post_types_js_1 = require("../controllers/posts/post-types.js");
+const session_middleware_js_1 = require("./middlewares/session-middleware.js");
+exports.postRoutes = new hono_1.Hono();
+exports.postRoutes.post("/create-post", session_middleware_js_1.sessionMiddleware, async (context) => {
     const user = context.get("user");
     const input = await context.req.json();
     try {
-        const result = await createPost({
+        const result = await (0, post_controller_js_1.createPost)({
             userId: user.id,
             input,
         });
         return context.json({ data: result }, 200);
     }
     catch (e) {
-        if (e === CreatePostError.BAD_REQUEST) {
+        if (e === post_types_js_1.CreatePostError.BAD_REQUEST) {
             return context.json({ message: "Title and content are required" }, 400);
         }
-        if (e === CreatePostError.UNAUTHORIZED) {
+        if (e === post_types_js_1.CreatePostError.UNAUTHORIZED) {
             return context.json({ message: "User is not authorized" }, 401);
         }
         return context.json({ message: "Internal Server Error" }, 500);
     }
 });
-postRoutes.delete("/deletepost/:postId", sessionMiddleware, async (context) => {
+exports.postRoutes.delete("/deletepost/:postId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const userId = context.get("user").id;
     const postId = String(await context.req.param("postId"));
     try {
-        const response = await deletePost({
+        const response = await (0, post_controller_js_1.deletePost)({
             userId,
             postId,
         });
@@ -35,12 +38,12 @@ postRoutes.delete("/deletepost/:postId", sessionMiddleware, async (context) => {
         return context.json(response, 200);
     }
     catch (e) {
-        if (e === DeletePostError.NOT_FOUND) {
+        if (e === post_types_js_1.DeletePostError.NOT_FOUND) {
             return context.json({
                 message: "Post is not found",
             }, 400);
         }
-        if (e === DeletePostError.UNAUTHORIZED) {
+        if (e === post_types_js_1.DeletePostError.UNAUTHORIZED) {
             return context.json({
                 message: "User is not found",
             }, 400);
@@ -51,16 +54,16 @@ postRoutes.delete("/deletepost/:postId", sessionMiddleware, async (context) => {
     }
 });
 //added get post by id function
-postRoutes.get("/getpost/:postId", sessionMiddleware, async (context) => {
+exports.postRoutes.get("/getpost/:postId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const postId = String(await context.req.param("postId"));
     try {
-        const result = await getPostById(postId);
+        const result = await (0, post_controller_js_1.getPostById)(postId);
         return context.json({
             data: result,
         }, 200);
     }
     catch (e) {
-        if (e === GetPostError.BAD_REQUEST) {
+        if (e === post_types_js_1.GetPostError.BAD_REQUEST) {
             return context.json({
                 message: "Post with given id does not exist",
             }, 400);
@@ -70,12 +73,12 @@ postRoutes.get("/getpost/:postId", sessionMiddleware, async (context) => {
         }, 500);
     }
 });
-postRoutes.get("/pastposts", sessionMiddleware, async (context) => {
+exports.postRoutes.get("/pastposts", session_middleware_js_1.sessionMiddleware, async (context) => {
     const before = context.req.query("before") ?? new Date().toISOString();
     const page = Number(context.req.query("page") || 1);
     const limit = Number(context.req.query("limit") || 10);
     try {
-        const result = await getPastPosts(before, page, limit);
+        const result = await (0, post_controller_js_1.getPastPosts)(before, page, limit);
         return context.json({
             data: result.posts,
             pagination: {
@@ -91,12 +94,12 @@ postRoutes.get("/pastposts", sessionMiddleware, async (context) => {
         return context.json({ message: "Internal server error" }, 500);
     }
 });
-postRoutes.get("/getAllposts", sessionMiddleware, async (context) => {
+exports.postRoutes.get("/getAllposts", session_middleware_js_1.sessionMiddleware, async (context) => {
     const user = context.get("user");
     const page = Number(context.req.query("page") || 1);
     const limit = Number(context.req.query("limit") || 10);
     try {
-        const result = await getAllPosts(user.id, page, limit);
+        const result = await (0, post_controller_js_1.getAllPosts)(user.id, page, limit);
         return context.json({
             data: result.posts,
             pagination: {
@@ -112,12 +115,12 @@ postRoutes.get("/getAllposts", sessionMiddleware, async (context) => {
         return context.json({ message: "Internal Server Error" }, 500);
     }
 });
-postRoutes.get("/byUser/:userId", sessionMiddleware, async (context) => {
+exports.postRoutes.get("/byUser/:userId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const userId = context.req.param("userId");
     const page = Number(context.req.query("page") || 1);
     const limit = Number(context.req.query("limit") || 10);
     try {
-        const result = await getPostsByUser({
+        const result = await (0, post_controller_js_1.getPostsByUser)({
             userId,
             page,
             limit,
@@ -136,12 +139,12 @@ postRoutes.get("/byUser/:userId", sessionMiddleware, async (context) => {
         return context.json({ message: "Internal Server Error" }, 500);
     }
 });
-postRoutes.get("/search", sessionMiddleware, async (context) => {
+exports.postRoutes.get("/search", session_middleware_js_1.sessionMiddleware, async (context) => {
     const keyword = context.req.query("q") || "";
     const page = Number(context.req.query("page") || 1);
     const limit = Number(context.req.query("limit") || 10);
     try {
-        const result = await searchPosts({
+        const result = await (0, post_controller_js_1.searchPosts)({
             keyword,
             page,
             limit,

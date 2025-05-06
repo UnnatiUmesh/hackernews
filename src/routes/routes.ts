@@ -5,15 +5,23 @@ import { likeRoutes } from "./like-routes.js";
 import { commentRoutes } from "./comments-routes.js";
 import { cors } from "hono/cors";
 import { authRoute } from "./middlewares/session-middleware.js";
+import { logger } from "hono/logger";
+import { webClientUrl } from "../environment.js";
 export const allroutes = new Hono();
 allroutes.use(
+  "*",
   cors({
-    origin: "http://localhost:4000",
+    origin: webClientUrl, 
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
     credentials: true,
-  }),
+  })
 );
+
+// Global logger
+allroutes.use(logger());
 allroutes.get("/health", async (context) => {
   return context.json(
     {

@@ -4,6 +4,7 @@ import { allroutes } from "./routes/routes.js";
 
 const app = new Hono();
 
-serve(allroutes, ({ port }) => {
+app.route('/',allroutes);
+serve(app, ({ port }) => {
   console.log(`\tRunning @ http://localhost:${port}`);
 });

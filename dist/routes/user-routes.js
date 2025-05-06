@@ -1,12 +1,15 @@
-import { Hono } from "hono";
-import { getAllUsers, getMe, getUserById } from "../controllers/users/user-controller.js";
-import { GetMeError } from "../controllers/users/user-types.js";
-import { sessionMiddleware } from "./middlewares/session-middleware.js";
-export const usersRoutes = new Hono();
-usersRoutes.get("/me", sessionMiddleware, async (context) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.usersRoutes = void 0;
+const hono_1 = require("hono");
+const user_controller_js_1 = require("../controllers/users/user-controller.js");
+const user_types_js_1 = require("../controllers/users/user-types.js");
+const session_middleware_js_1 = require("./middlewares/session-middleware.js");
+exports.usersRoutes = new hono_1.Hono();
+exports.usersRoutes.get("/me", session_middleware_js_1.sessionMiddleware, async (context) => {
     const userId = context.get("user").id;
     try {
-        const user = await getMe({
+        const user = await (0, user_controller_js_1.getMe)({
             userId,
         });
         return context.json({
@@ -14,7 +17,7 @@ usersRoutes.get("/me", sessionMiddleware, async (context) => {
         }, 200);
     }
     catch (e) {
-        if (e === GetMeError.BAD_REQUEST) {
+        if (e === user_types_js_1.GetMeError.BAD_REQUEST) {
             return context.json({
                 error: "User not found",
             }, 400);
@@ -24,11 +27,11 @@ usersRoutes.get("/me", sessionMiddleware, async (context) => {
         }, 500);
     }
 });
-usersRoutes.get("/getAllusers", sessionMiddleware, async (context) => {
+exports.usersRoutes.get("/getAllusers", session_middleware_js_1.sessionMiddleware, async (context) => {
     const page = Number(context.req.query("page") || 1);
     const limit = Number(context.req.query("limit") || 10);
     try {
-        const result = await getAllUsers(page, limit);
+        const result = await (0, user_controller_js_1.getAllUsers)(page, limit);
         return context.json({
             data: result.users,
             pagination: {
@@ -43,10 +46,10 @@ usersRoutes.get("/getAllusers", sessionMiddleware, async (context) => {
         return context.json({ message: e }, 404);
     }
 });
-usersRoutes.get("/:userId", sessionMiddleware, async (context) => {
+exports.usersRoutes.get("/:userId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const userId = context.req.param("userId");
     try {
-        const user = await getUserById(userId);
+        const user = await (0, user_controller_js_1.getUserById)(userId);
         return context.json({ data: user }, 200);
     }
     catch (error) {

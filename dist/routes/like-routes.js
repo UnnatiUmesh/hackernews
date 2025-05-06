@@ -1,30 +1,33 @@
-import { Hono } from "hono";
-import { likePost, getLikePosts, deleteLikes, } from "../controllers/likes/like-controller.js";
-import { LikePostError, GetLikePostError, DeleteLikeError, } from "../controllers/likes/like-type.js";
-import { sessionMiddleware } from "./middlewares/session-middleware.js";
-export const likeRoutes = new Hono();
-likeRoutes.post("/on/:postId", sessionMiddleware, async (context) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.likeRoutes = void 0;
+const hono_1 = require("hono");
+const like_controller_js_1 = require("../controllers/likes/like-controller.js");
+const like_type_js_1 = require("../controllers/likes/like-type.js");
+const session_middleware_js_1 = require("./middlewares/session-middleware.js");
+exports.likeRoutes = new hono_1.Hono();
+exports.likeRoutes.post("/on/:postId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const user = context.get("user");
     const postId = await context.req.param("postId");
     try {
-        const result = await likePost({
+        const result = await (0, like_controller_js_1.likePost)({
             userId: user.id,
             postId,
         });
         return context.json(result, 200);
     }
     catch (e) {
-        if (e === LikePostError.UNAUTHORIZED) {
+        if (e === like_type_js_1.LikePostError.UNAUTHORIZED) {
             return context.json({
                 message: "User with the token is not found",
             }, 400);
         }
-        if (e === LikePostError.NOT_FOUND) {
+        if (e === like_type_js_1.LikePostError.NOT_FOUND) {
             return context.json({
                 message: "Post with given id is not found",
             }, 404);
         }
-        if (e === LikePostError.ALREADY_LIKED) {
+        if (e === like_type_js_1.LikePostError.ALREADY_LIKED) {
             return context.json({
                 message: "The post is already liked",
             }, 400);
@@ -34,45 +37,45 @@ likeRoutes.post("/on/:postId", sessionMiddleware, async (context) => {
         }, 500);
     }
 });
-likeRoutes.get("/on/:postId", sessionMiddleware, async (context) => {
+exports.likeRoutes.get("/on/:postId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const user = context.get("user");
     const postId = await context.req.param("postId");
     try {
-        const result = await getLikePosts({
+        const result = await (0, like_controller_js_1.getLikePosts)({
             userId: user.id,
             postId,
         });
         return context.json(result, 200);
     }
     catch (e) {
-        if (e === GetLikePostError.UNAUTHORIZED) {
+        if (e === like_type_js_1.GetLikePostError.UNAUTHORIZED) {
             return context.json({ message: "User unauthorized" }, 400);
         }
         return context.json({ message: "Internal Server Error" }, 500);
     }
 });
-likeRoutes.delete("/deletelike/:postId", sessionMiddleware, async (context) => {
+exports.likeRoutes.delete("/deletelike/:postId", session_middleware_js_1.sessionMiddleware, async (context) => {
     const userId = context.get("user").id;
     const postId = String(await context.req.param("postId"));
     try {
-        const response = await deleteLikes({
+        const response = await (0, like_controller_js_1.deleteLikes)({
             userId,
             postId,
         });
         return context.json(response, 200);
     }
     catch (e) {
-        if (e === DeleteLikeError.NOT_FOUND) {
+        if (e === like_type_js_1.DeleteLikeError.NOT_FOUND) {
             return context.json({
                 message: "Post is not found",
             }, 400);
         }
-        if (e === DeleteLikeError.UNAUTHORIZED) {
+        if (e === like_type_js_1.DeleteLikeError.UNAUTHORIZED) {
             return context.json({
                 message: "User is not found",
             }, 400);
         }
-        if (e === DeleteLikeError.LIKE_NOT_FOUND) {
+        if (e === like_type_js_1.DeleteLikeError.LIKE_NOT_FOUND) {
             return context.json({
                 message: "Like on the post is not found",
             }, 400);

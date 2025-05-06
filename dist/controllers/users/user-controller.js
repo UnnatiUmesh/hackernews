@@ -1,7 +1,10 @@
-import { prismaClient } from "../../extras/prisma.js";
-import { GetMeError, usersError, } from "./user-types.js";
-export const getMe = async (parameters) => {
-    const user = await prismaClient.user.findUnique({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUserById = exports.getAllUsers = exports.getMe = void 0;
+const prisma_js_1 = require("../../extras/prisma.js");
+const user_types_js_1 = require("./user-types.js");
+const getMe = async (parameters) => {
+    const user = await prisma_js_1.prismaClient.user.findUnique({
         where: {
             id: parameters.userId,
         },
@@ -18,14 +21,15 @@ export const getMe = async (parameters) => {
         }
     });
     if (!user) {
-        throw GetMeError.BAD_REQUEST;
+        throw user_types_js_1.GetMeError.BAD_REQUEST;
     }
     return {
         user,
     };
 };
-export const getAllUsers = async (page = 1, limit = 10) => {
-    const users = await prismaClient.user.findMany({
+exports.getMe = getMe;
+const getAllUsers = async (page = 1, limit = 10) => {
+    const users = await prisma_js_1.prismaClient.user.findMany({
         orderBy: {
             name: "asc",
         },
@@ -33,16 +37,17 @@ export const getAllUsers = async (page = 1, limit = 10) => {
         take: limit,
     });
     if (!users) {
-        throw usersError.BAD_REQUEST;
+        throw user_types_js_1.usersError.BAD_REQUEST;
     }
-    const totalUsers = await prismaClient.user.count();
+    const totalUsers = await prisma_js_1.prismaClient.user.count();
     return {
         users,
         total: totalUsers,
     };
 };
-export const getUserById = async (userId) => {
-    const user = await prismaClient.user.findUnique({
+exports.getAllUsers = getAllUsers;
+const getUserById = async (userId) => {
+    const user = await prisma_js_1.prismaClient.user.findUnique({
         where: { id: userId },
         select: {
             id: true,
@@ -55,3 +60,4 @@ export const getUserById = async (userId) => {
     }
     return user;
 };
+exports.getUserById = getUserById;

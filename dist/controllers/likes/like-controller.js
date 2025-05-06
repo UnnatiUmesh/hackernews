@@ -1,25 +1,28 @@
-import { prismaClient } from "../../extras/prisma.js";
-import { LikePostError, GetLikePostError, DeleteLikeError, } from "./like-type.js";
-export const likePost = async (parameters) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteLikes = exports.getLikePosts = exports.likePost = void 0;
+const prisma_js_1 = require("../../extras/prisma.js");
+const like_type_js_1 = require("./like-type.js");
+const likePost = async (parameters) => {
     const { userId, postId } = parameters;
-    const existuser = await prismaClient.user.findUnique({
+    const existuser = await prisma_js_1.prismaClient.user.findUnique({
         where: { id: userId },
         select: {
             id: true,
         }
     });
     if (!existuser)
-        throw LikePostError.UNAUTHORIZED;
-    const post = await prismaClient.post.findUnique({ where: { id: postId } });
+        throw like_type_js_1.LikePostError.UNAUTHORIZED;
+    const post = await prisma_js_1.prismaClient.post.findUnique({ where: { id: postId } });
     if (!post)
-        throw LikePostError.NOT_FOUND;
-    const alreadyliked = await prismaClient.like.findFirst({
+        throw like_type_js_1.LikePostError.NOT_FOUND;
+    const alreadyliked = await prisma_js_1.prismaClient.like.findFirst({
         where: { userId, postId },
     });
     if (alreadyliked)
-        throw LikePostError.ALREADY_LIKED;
+        throw like_type_js_1.LikePostError.ALREADY_LIKED;
     try {
-        const like = await prismaClient.like.create({
+        const like = await prisma_js_1.prismaClient.like.create({
             data: {
                 userId,
                 postId
@@ -29,17 +32,18 @@ export const likePost = async (parameters) => {
     }
     catch (error) {
         console.error("Error creating like:", error);
-        throw LikePostError;
+        throw like_type_js_1.LikePostError;
     }
 };
-export const getLikePosts = async (parameters) => {
-    const user = await prismaClient.user.findUnique({ where: { id: parameters.userId }, select: {
+exports.likePost = likePost;
+const getLikePosts = async (parameters) => {
+    const user = await prisma_js_1.prismaClient.user.findUnique({ where: { id: parameters.userId }, select: {
             id: true,
         } });
     if (!user)
-        throw GetLikePostError.UNAUTHORIZED;
-    const total = await prismaClient.like.count({ where: { postId: parameters.postId } });
-    const alreadyLiked = !!(await prismaClient.like.findFirst({
+        throw like_type_js_1.GetLikePostError.UNAUTHORIZED;
+    const total = await prisma_js_1.prismaClient.like.count({ where: { postId: parameters.postId } });
+    const alreadyLiked = !!(await prisma_js_1.prismaClient.like.findFirst({
         where: {
             userId: parameters.userId,
             postId: parameters.postId,
@@ -50,8 +54,9 @@ export const getLikePosts = async (parameters) => {
         alreadyLiked,
     };
 };
-export const deleteLikes = async (parameters) => {
-    const user = await prismaClient.user.findUnique({
+exports.getLikePosts = getLikePosts;
+const deleteLikes = async (parameters) => {
+    const user = await prisma_js_1.prismaClient.user.findUnique({
         where: {
             id: parameters.userId,
         },
@@ -60,26 +65,26 @@ export const deleteLikes = async (parameters) => {
         }
     });
     if (!user) {
-        throw DeleteLikeError.UNAUTHORIZED;
+        throw like_type_js_1.DeleteLikeError.UNAUTHORIZED;
     }
-    const post = await prismaClient.post.findUnique({
+    const post = await prisma_js_1.prismaClient.post.findUnique({
         where: {
             id: parameters.postId,
         },
     });
     if (!post) {
-        return DeleteLikeError.NOT_FOUND;
+        return like_type_js_1.DeleteLikeError.NOT_FOUND;
     }
-    const existinglike = await prismaClient.like.findFirst({
+    const existinglike = await prisma_js_1.prismaClient.like.findFirst({
         where: {
             userId: parameters.userId,
             postId: parameters.postId,
         },
     });
     if (!existinglike) {
-        throw DeleteLikeError.LIKE_NOT_FOUND;
+        throw like_type_js_1.DeleteLikeError.LIKE_NOT_FOUND;
     }
-    await prismaClient.like.delete({
+    await prisma_js_1.prismaClient.like.delete({
         where: {
             id: existinglike.id,
         },
@@ -88,3 +93,4 @@ export const deleteLikes = async (parameters) => {
         message: "Like on the given post deleted suceesfully",
     };
 };
+exports.deleteLikes = deleteLikes;
