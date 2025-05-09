@@ -1,4 +1,4 @@
-import type { Post } from "../../generated/prisma/index.js";
+import type { Post } from "../../generated/prisma/client";
 
 export type CreatePostInput = {
   title: string;

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { getAllUsers, getMe, getUserById } from "../controllers/users/user-controller.js";
-import { GetMeError } from "../controllers/users/user-types.js";
-import { sessionMiddleware } from "./middlewares/session-middleware.js";
+import { getAllUsers, getMe, getUserById } from "../controllers/users/user-controller";
+import { GetMeError } from "../controllers/users/user-types";
+import { sessionMiddleware } from "./middlewares/session-middleware";
 
 export const usersRoutes = new Hono();
 

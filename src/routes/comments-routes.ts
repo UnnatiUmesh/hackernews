@@ -7,15 +7,15 @@ import {
   updateCommentById,
   getAllComments,
   getCommentsByUser,
-} from "../controllers/comments/comment-controller.js";
+} from "../controllers/comments/comment-controller";
 import {
   CommentPostError,
   GetCommentPostError,
   DeleteCommentError,
   UpdateCommetError,
-} from "../controllers/comments/comment-types.js";
+} from "../controllers/comments/comment-types";
 
-import { sessionMiddleware } from "./middlewares/session-middleware.js";
+import { sessionMiddleware } from "./middlewares/session-middleware";
 
 export const commentRoutes = new Hono();
 

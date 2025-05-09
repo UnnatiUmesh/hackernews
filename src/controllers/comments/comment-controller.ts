@@ -1,4 +1,4 @@
-import { prismaClient } from "../../extras/prisma";
+import { prismaClient } from "../../integrations/prisma";
 import {
   type CommentPostResult,
   CommentPostError,

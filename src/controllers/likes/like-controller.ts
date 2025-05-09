@@ -1,11 +1,10 @@
-import { prismaClient } from "../../extras/prisma.js";
+import { prismaClient } from "../../integrations/prisma";
 import {
   type LikePostResult,
   LikePostError,
-  type GetLikePost,
   GetLikePostError,
   DeleteLikeError,
-} from "./like-type.js";
+} from "./like-type";
 
 
 export const likePost = async (parameters: {

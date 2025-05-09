@@ -1,15 +1,16 @@
+// serverUrl
+// webClientUrl
+
 import { betterAuth } from "better-auth";
-import { betterAuthSecret, serverUrl, webClientUrl } from "../../environment.js";
+import { betterAuthSecret, serverUrl, webClientUrl } from "../../environment";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-// import { prismaClient } from "../prisma";
-import {username} from "better-auth/plugins";
-import { prismaClient } from "../prisma/index.js";
+import { username } from "better-auth/plugins";
+import { prismaClient } from "../prisma";
 
 const betterAuthServerClient = betterAuth({
   baseURL: serverUrl,
   trustedOrigins: [webClientUrl],
   secret: betterAuthSecret,
-  plugins:[username()],
   database: prismaAdapter(prismaClient, {
     provider: "postgresql",
   }),
@@ -28,6 +29,7 @@ const betterAuthServerClient = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [username()],
   advanced: {
     defaultCookieAttributes: {
       sameSite: "none",

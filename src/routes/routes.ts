@@ -1,12 +1,13 @@
 import { Hono } from "hono";
-import { usersRoutes } from "./user-routes.js";
-import { postRoutes } from "./post-routes.js";
-import { likeRoutes } from "./like-routes.js";
-import { commentRoutes } from "./comments-routes.js";
+import { usersRoutes } from "./user-routes";
+import { postRoutes } from "./post-routes";
+import { likeRoutes } from "./like-routes";
+import { commentRoutes } from "./comments-routes";
 import { cors } from "hono/cors";
-import { authRoute } from "./middlewares/session-middleware.js";
+import { authRoute } from "./middlewares/session-middleware";
 import { logger } from "hono/logger";
-import { webClientUrl } from "../environment.js";
+import { webClientUrl } from "../environment";
+
 export const allroutes = new Hono();
 allroutes.use(
   "*",

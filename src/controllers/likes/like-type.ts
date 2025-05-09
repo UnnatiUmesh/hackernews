@@ -1,4 +1,4 @@
-import type { Like } from "../../generated/prisma/index.js";
+import type { Like } from "../../generated/prisma/client";
 
 export enum LikePostError {
   NOT_FOUND,

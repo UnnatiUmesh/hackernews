@@ -4,13 +4,13 @@ import {
   likePost,
   getLikePosts,
   deleteLikes,
-} from "../controllers/likes/like-controller.js";
+} from "../controllers/likes/like-controller";
 import {
   LikePostError,
   GetLikePostError,
   DeleteLikeError,
-} from "../controllers/likes/like-type.js";
-import { sessionMiddleware } from "./middlewares/session-middleware.js";
+} from "../controllers/likes/like-type";
+import { sessionMiddleware } from "./middlewares/session-middleware";
 
 export const likeRoutes = new Hono();
 
