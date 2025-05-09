@@ -33,7 +33,7 @@ const betterAuthServerClient = betterAuth({
   advanced: {
     defaultCookieAttributes: {
       sameSite: "none",
-      secure: true,
+      secure: false,
       partitioned: true,
     },
   },
